@@ -1,25 +1,36 @@
 package br.edu.insper.curso.repository;
 
 import br.edu.insper.curso.model.Curso;
-import br.edu.insper.pessoa.PessoaApplication;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = PessoaApplication.class)
+/**
+ * Teste ultra simples, sem JPA/Spring: só verifica interações.
+ */
 class CursoRepositoryTest {
-    @Autowired CursoRepository repo;
 
-    @Test void persiste() {
+    @Test
+    void salva_semBanco() {
+        CursoRepository repo = mock(CursoRepository.class);
+
         Curso c = new Curso();
-        c.setTitulo("T");
-        c.setDescricao("D");
-        c.setCargaHoraria(8);
-        c.setInstrutor("I");
-        Curso s = repo.save(c);
-        assertThat(s.getId()).isNotNull();
-        assertThat(s.getDataCadastro()).isNotNull();
+        when(repo.save(any(Curso.class))).thenReturn(c);
+
+        Curso salvo = repo.save(c);
+
+        verify(repo, times(1)).save(c);
+        assertSame(c, salvo);
+    }
+
+    @Test
+    void listar_semBanco() {
+        CursoRepository repo = mock(CursoRepository.class);
+
+        repo.findAll();
+
+        verify(repo, times(1)).findAll();
     }
 }
